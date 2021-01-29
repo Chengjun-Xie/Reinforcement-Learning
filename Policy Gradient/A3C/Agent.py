@@ -1,8 +1,6 @@
 import torch.multiprocessing as mp
 import torch
-from collections import namedtuple
 from itertools import count
-from torch import optim
 from torch import nn
 from torch.distributions import Categorical, Normal
 from Network import Actor, Critic
@@ -32,16 +30,19 @@ class Agent(mp.Process):
         self.nS = env.observation_space.shape[0]
         self.render = render
 
+        # set environment
+        self.continuous = self.env.continuous
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.buffer = {"state": [],
+                       "action": [],
+                       "reward": [],
+                       "next_state": [],
+                       "gradient" : []}
+
         # set local network
         self.policy_net = Actor(self.nS, self.nA, hidden_size, env.continuous).to(self.device)
         self.critic_net = Critic(self.nS, hidden_size).to(self.device)
         self.loss = nn.MSELoss()
-
-        # set environment
-        self.continuous = self.env.continuous
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.Experience = namedtuple('Experience', ('state', 'action', 'reward', 'next_state', 'gradient'))
-        self.buffer = []
 
         # set global plot value
         self.global_episode = global_episode
@@ -63,12 +64,11 @@ class Agent(mp.Process):
         return action, gradient
 
     def get_batch(self):
-        batch = self.Experience(*zip(*self.buffer))
-        state_batch = torch.cat(batch.state)
-        action_batch = torch.cat(batch.action)
-        reward_batch = torch.cat(batch.reward)
-        next_state_batch = torch.cat(batch.next_state)
-        gradient_batch = torch.cat(batch.gradient)
+        state_batch = torch.cat(self.buffer["state"])
+        action_batch = torch.cat(self.buffer["action"])
+        reward_batch = torch.cat(self.buffer["reward"])
+        next_state_batch = torch.cat(self.buffer["next_state"])
+        gradient_batch = torch.cat(self.buffer["gradient"])
         return state_batch, action_batch, reward_batch, next_state_batch, gradient_batch
 
     def compute_discounted_sum_of_return(self, reward_batch):
@@ -79,9 +79,19 @@ class Agent(mp.Process):
             discounted_sum_of_return[t] = current_return
         return discounted_sum_of_return.unsqueeze(1)
 
+    def reset_buffer(self):
+        self.buffer = {"state": [],
+                       "action": [],
+                       "reward": [],
+                       "next_state": [],
+                       "gradient": []}
+
     def push_new_experience(self, state, action, reward, next_state, gradient):
-        new_experience = self.Experience(state, action, reward, next_state, gradient)
-        self.buffer.append(new_experience)
+        self.buffer["state"].append(state)
+        self.buffer["action"].append(action)
+        self.buffer["reward"].append(reward)
+        self.buffer["next_state"].append(next_state)
+        self.buffer["gradient"].append(gradient)
 
     def execute_selected_action(self, state, action, gradient):
         next_state, reward, done, _ = self.env.step(action.numpy().reshape(2))
@@ -96,7 +106,7 @@ class Agent(mp.Process):
         for t in reversed(range(0, reward_batch.shape[0])):
             next_state_value = reward_batch[t] + self.discount_factor * next_state_value
             target_state_value[t] = next_state_value
-        return target_state_value
+        return target_state_value.unsqueeze(1)
 
     def compute_loss(self, gradient_batch, advantage_batch):
         loss = (gradient_batch.T @ advantage_batch).mean().to(self.device)
@@ -123,25 +133,26 @@ class Agent(mp.Process):
 
     def plot_result(self, total_rewards, actor_loss, critic_loss):
         with self.global_episode.get_lock():
-            self.global_episode += 1
+            self.global_episode.value += 1
         self.global_reward_queue.put(total_rewards)
-        self.global_actor_loss_queue.put(actor_loss)
-        self.global_critic_loss_queue.put(critic_loss)
+        self.global_actor_loss_queue.put(actor_loss.detach().cpu().numpy())
+        self.global_critic_loss_queue.put(critic_loss.detach().cpu().numpy())
         print("Agent ID: {0} | Episode: {1}, \t Total Reward {2}"
               .format(self.agent_id, self.global_episode.value, total_rewards))
         print("              | Critic Loss: {0}, \t Actor Loss {1}"
               .format(actor_loss, critic_loss))
 
-    def train(self):
+    def run(self):
         self.policy_net.train()
         self.critic_net.train()
+        print("Agent {0} start training".format(self.agent_id))
 
-        while self.global_episode < self.num_episode:
+        while self.global_episode.value < self.num_episode:
             # initial environment
             current_state = self.env.reset()
             current_state = torch.tensor([current_state], device=self.device, dtype=torch.float)
 
-            self.buffer = []
+            self.reset_buffer()
             total_reward = 0
             total_actor_loss = 0
             total_critic_loss = 0
@@ -165,11 +176,12 @@ class Agent(mp.Process):
                     td_error = target_state_value - predicted_state_value
 
                     critic_loss = self.loss(predicted_state_value, target_state_value)
-                    actor_loss = self.compute_loss(gradient, td_error)
+                    actor_loss = self.compute_loss(gradient_batch, td_error)
                     self.update_model(critic_loss, actor_loss)
 
                     total_actor_loss += actor_loss
                     total_critic_loss += critic_loss
+                    self.reset_buffer()
 
                 if done:
                     average_actor_loss = total_actor_loss / step

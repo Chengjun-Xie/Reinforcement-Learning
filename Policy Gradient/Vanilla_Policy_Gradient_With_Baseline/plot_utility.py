@@ -42,7 +42,7 @@ class moving_average:
     def plot_moving_average(self, score, actor_loss, critic_loss=None):
         self._calculate_moving_average(score, actor_loss, critic_loss)
 
-        plt.figure()
+        plt.figure(2)
         plt.clf()
 
         plt.subplot(121)

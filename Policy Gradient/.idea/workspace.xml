@@ -17,18 +17,18 @@
   </component>
   <component name="ProjectId" id="1lVdYECl7k2YfCiAuBP4evA0Kxv" />
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/Advantage_Actor_Critic" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/A3C" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Vorlesungen\Reinforcement_Learning\Policy Gradient\A3C" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Vorlesungen\Reinforcement_Learning\Policy Gradient\A3C" />
       <recent name="D:\Vorlesungen\Reinforcement_Learning\Policy Gradient\Advantage_Actor_Critic" />
       <recent name="D:\Vorlesungen\Reinforcement_Learning\Policy Gradient\Vanilla_Policy_Gradient_With_Baseline" />
       <recent name="D:\Vorlesungen\Reinforcement_Learning\Policy Gradient\REINFORCE" />
-      <recent name="D:\Vorlesungen\Reinforcement_Learning\Policy Gradient\A3C" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Vorlesungen\Reinforcement_Learning\Policy Gradient\A3C" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -43,7 +43,28 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.Advantage_Action_Critic">
+  <component name="RunManager" selected="Python.A3C">
+    <configuration name="A3C" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Policy Gradient" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/A3C" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/A3C/A3C.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="Advantage_Action_Critic" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Policy Gradient" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -65,7 +86,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="DQN" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="REINFORCE (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Policy Gradient" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -73,11 +94,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../DQN" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/REINFORCE" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../DQN/DQN.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/REINFORCE/REINFORCE.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -130,10 +151,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.A3C" />
+        <item itemvalue="Python.REINFORCE (1)" />
         <item itemvalue="Python.Advantage_Action_Critic" />
         <item itemvalue="Python.Vanilla_Policy_Gradient_With_Baseline" />
         <item itemvalue="Python.REINFORCE" />
-        <item itemvalue="Python.DQN" />
       </list>
     </recent_temporary>
   </component>
@@ -149,5 +171,16 @@
       <updated>1607686237860</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/A3C/Agent.py</url>
+          <line>175</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
